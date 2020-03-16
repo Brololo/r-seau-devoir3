@@ -481,3 +481,24 @@ utilisez tcpdump pour mettre en évidence des paquets échangés par SSH
 trouvez quel protocole utilise SSH : TCP ou UDP ?
 
 SSH utilise le protoole TCP, car on voit un 3-way handshake, ainsi que des accusés de réception(et puis c'est marqué sur wireshark 🤠).
+
+IV. Bonus
+
+1. ARP cache poisoning
+   Mettez en place de l'ARP cache poisoning ou ARP spoofing :
+
+🌞 Par exemple, créez une deuxième machine client client2. Depuis client2, faites croire à client1 que vous êtes sa passerelle :
+
+client2 est dans le même réseau que client1, on donne à client2 l'ip 10.3.1.12.
+
+On fais aussi la commande "sudo sysctl net.ipv4.ip_nonlocal_bind=1", pour permettre à notre machine de lier des sockets à des adresses IP qu'il ne possède pas.
+
+Puis on fais la commande : arping -c 1 -U -s <IP que l on veut> -I enp0s8 <IP victime>
+
+Donc dans mon cas :
+
+arping -c 1 -U -s 10.3.1.13 -I enp0s8 10.3.1.11
+
+ainsi client2 va envoyer à client1 qu'il possède l'adresse IP 10.3.1.13 alors que c'est faux, mais client1 va quand même l'enregistrer dans sa table ARP sans savoir que c'est faux.
+
+Mais ceci est éphémère car un test est effectué au bout de 1 minute si aucune connexion n'a été faite.
